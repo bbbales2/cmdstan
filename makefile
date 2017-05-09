@@ -16,7 +16,7 @@ help:
 # - AR: archiver (must specify for cross-compiling)
 # - OS: {mac, win, linux}. 
 ##
-CC = g++
+CC = clang++
 O = 3
 O_STANC = 0
 AR = ar
@@ -33,9 +33,10 @@ include $(MATH)make/libraries
 ## 
 include $(MATH)make/default_compiler_options
 CXXFLAGS += -I src -I $(STAN)src -isystem $(MATH) -DEIGEN_NO_DEBUG -DFUSION_MAX_VECTOR_SIZE=12
+LDLIBS =  -llapack
 LDLIBS_STANC = -Lbin -lstanc
-STANCFLAGS ?=
-USER_HEADER ?= $(dir $<)user_header.hpp
+STANCFLAGS ?= --allow_undefined --name=rus
+USER_HEADER ?= src/modal_cpp/stan_mech.hpp $(dir $<)user_header.hpp
 PATH_SEPARATOR = /
 CMDSTAN_VERSION := 2.17.0
 
