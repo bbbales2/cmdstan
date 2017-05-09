@@ -16,7 +16,7 @@ help:
 # - AR: archiver (must specify for cross-compiling)
 # - OS: {mac, win, linux}. 
 ##
-CC = g++
+CC = clang++
 O = 3
 O_STANC = 0
 AR = ar
@@ -31,12 +31,12 @@ MATH ?= $(STAN)lib/stan_math/
 ##
 # Set default compiler options.
 ## 
-CFLAGS = -I src -I $(STAN)src -isystem $(MATH) -isystem $(EIGEN) -isystem $(BOOST) -isystem $(CVODES)/include -Wall -DEIGEN_NO_DEBUG  -DBOOST_RESULT_OF_USE_TR1 -DBOOST_NO_DECLTYPE -DBOOST_DISABLE_ASSERTS -DFUSION_MAX_VECTOR_SIZE=12 -DNO_FPRINTF_OUTPUT -pipe 
+CFLAGS = -I src -I $(STAN)src -isystem $(MATH) -isystem $(EIGEN) -isystem $(BOOST) -isystem $(CVODES)/include -Wall -DEIGEN_NO_DEBUG  -DBOOST_RESULT_OF_USE_TR1 -DBOOST_NO_DECLTYPE -DBOOST_DISABLE_ASSERTS -DFUSION_MAX_VECTOR_SIZE=12 -DNO_FPRINTF_OUTPUT -pipe -fPIC
 CFLAGS_GTEST = -DGTEST_USE_OWN_TR1_TUPLE
-LDLIBS = 
+LDLIBS =  -llapack
 LDLIBS_STANC = -Lbin -lstanc
-STANCFLAGS ?=
-USER_HEADER ?= $(dir $<)user_header.hpp
+STANCFLAGS ?= --allow_undefined --name=rus
+USER_HEADER ?= src/modal_cpp/stan_mech.hpp
 EXE = 
 PATH_SEPARATOR = /
 CMDSTAN_VERSION := 2.15.0
