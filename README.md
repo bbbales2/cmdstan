@@ -1,3 +1,7 @@
+# CmdStan-RUS
+
+This is a fork of CmdStan for some custom calculations! If you come here looking for cmdstan, you're in the wrong place! Head over to [https://github.com/stan-dev/cmdstan].
+
 <a href="http://mc-stan.org">
 <img src="https://raw.githubusercontent.com/stan-dev/logos/master/logo.png" width=200 alt="Stan Logo"/>
 </a>
