@@ -24,9 +24,9 @@ transformed data {
 }
 
 parameters {
-  real<lower = 0.0, upper = 4.0> c11;
-  real<lower = 0.5, upper = 4.0> a;
-  real<lower = 0.25, upper = 2.0> c44;
+  real<lower = 0.0> c11;
+  real<lower = 0.0> a;
+  real<lower = 0.0> c44;
   real<lower = 0.0> sigma;
 }
 
@@ -56,6 +56,10 @@ transformed parameters {
 
 model {
   sigma ~ normal(0, 2.0);
+
+  c11 ~ normal(1.0, 2.0);
+  a ~ normal(1.0, 2.0);
+  c44 ~ normal(1.0, 2.0);
 
   y ~ normal(mech_rus(P, N, lookup, C), sigma);
 }

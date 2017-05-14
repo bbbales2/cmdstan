@@ -30,9 +30,6 @@ transformed data {
 }
 
 // Parameters to estimate
-//
-// Really I want to completely get rid of constraints on these
-//   and move to weak priors. Constraints are bad business
 parameters {
   real<lower = 0.0> c11;
   real<lower = 0.0> a;
