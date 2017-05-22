@@ -4,6 +4,7 @@ functions {
   vector mech_init(int P, real X, real Y, real Z, real density);
   matrix mech_rotate(matrix C, vector q);
   vector mech_rus(int P, int N, vector lookup, matrix C);
+  vector cu2qu(vector cu);
 }
 
 // Input data
@@ -35,13 +36,14 @@ parameters {
   real<lower = 0.0> a;
   real<lower = 0.0> c44;
   real<lower = 0.0> sigma; // we'll estimate measurement noise
-  unit_vector[4] q; // rotation between sample & xtal axes
+  vector<lower = -1.0725146985555127, upper = 1.0725146985555127>[3] cu; // rotation between sample & xtal axes
 }
 
 // Build a 6x6 stiffness matrix and rotate it
 transformed parameters {
   real c12;
   matrix[6, 6] C;
+  vector[4] q;
   
   c12 = -(c44 * 2.0 / a - c11);
 
@@ -62,13 +64,15 @@ transformed parameters {
   C[2, 1] = c12;
   C[3, 1] = c12;
 
+  q = cu2qu(cu);
+  
   C = mech_rotate(C, q);
 }
 
 // This is the probabilistic model
 model {
   // Specify a prior on noise level. Units are khz, we expect ~100-300hz in a good fit
-  sigma ~ normal(0, 2.0);
+  sigma ~ normal(0, 1.0);
 
   // Specify soft priors on the elastic constants
   c11 ~ normal(1.0, 2.0);
