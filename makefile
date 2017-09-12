@@ -33,16 +33,16 @@ include $(MATH)make/libraries
 ## 
 include $(MATH)make/default_compiler_options
 CXXFLAGS += -I src -I $(STAN)src -isystem $(MATH) -DEIGEN_NO_DEBUG -DFUSION_MAX_VECTOR_SIZE=12
-LDLIBS =  -llapack
+LDLIBS += -llapack
 LDLIBS_STANC = -Lbin -lstanc
 STANCFLAGS ?= --allow_undefined --name=rus
-USER_HEADER ?= src/modal_cpp/stan_mech.hpp $(dir $<)user_header.hpp
+USER_HEADER ?= src/modal_cpp/stan_mech.hpp
 PATH_SEPARATOR = /
 CMDSTAN_VERSION := 2.17.0
 
 -include make/local
 
-CXX = $(CC)
+CXX = $(CC) -llapack
 
 ##
 # Get information about the compiler used.
