@@ -63,3 +63,14 @@ model {
 
   y ~ normal(mech_rus(P, N, lookup, C), sigma);
 }
+
+generated quantities {
+  vector[N] yhat;
+
+  {
+    vector[N] freqs = mech_rus(P, N, lookup, C);
+    for(n in 1:N) {
+      yhat[n] = normal_rng(freqs[n], sigma);
+    }
+  }
+}

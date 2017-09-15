@@ -33,7 +33,7 @@ transformed data {
 // Parameters to estimate
 parameters {
   real<lower = 0.0> c11;
-  real<lower = 0.0> a;
+  real<lower = 1.0> a;
   real<lower = 0.0> c44;
   real<lower = 0.0> sigma; // we'll estimate measurement noise
   vector<lower = -1.0725146985555127, upper = 1.0725146985555127>[3] cu; // rotation between sample & xtal axes
@@ -81,4 +81,15 @@ model {
 
   // Resonance modes are normally distributed around what you'd expect from an RUS calculation
   y ~ normal(mech_rus(P, N, lookup, C), sigma);
+}
+
+generated quantities {
+  vector[N] yhat;
+
+  {
+    vector[N] freqs = mech_rus(P, N, lookup, C);
+    for(n in 1:N) {
+      yhat[n] = normal_rng(freqs[n], sigma);
+    }
+  }
 }
