@@ -2,6 +2,18 @@
 
 This is a fork of CmdStan for some custom calculations! If you come here looking for cmdstan, you're in the wrong place! Head over to [https://github.com/stan-dev/cmdstan].
 
+For the input files, L is a function of P according to this table:
+
+P | L
+--- | ---
+8 | 165
+10 | 286
+12 | 455
+14 | 680
+16 | 969
+18 | 1330
+20 | 1771
+
 <a href="http://mc-stan.org">
 <img src="https://raw.githubusercontent.com/stan-dev/logos/master/logo.png" width=200 alt="Stan Logo"/>
 </a>
