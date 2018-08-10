@@ -14,6 +14,8 @@ P | L
 18 | 1330
 20 | 1771
 
+L = (P + 1) * (P + 2) * (P + 3) / 6
+
 <a href="http://mc-stan.org">
 <img src="https://raw.githubusercontent.com/stan-dev/logos/master/logo.png" width=200 alt="Stan Logo"/>
 </a>
