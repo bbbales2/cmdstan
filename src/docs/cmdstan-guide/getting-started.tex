@@ -70,7 +70,7 @@ make               test-all.sh
     \end{quote}
     %
   \item \emph{Optional:} \, Set local \code{make} variables by editing
-    the file \verb+~/.config/cmdstan/make.local+ or
+    the file \verb+~/.config/stan/make.local+ or
     \verb+<cmdstan-home>/make/local+. See \refappendix{make-options}
     for a list of available options.  For most installations, this
     step can be skipped; the default configuration should work for
@@ -97,7 +97,7 @@ report (after other lines of output)
 %
 \begin{quote}
   \begin{Verbatim}
---- CmdStan v2.17.0 built ---
+--- CmdStan v2.18.0 built ---
   \end{Verbatim}
 \end{quote}
 %
@@ -186,11 +186,11 @@ first translate the Stan program to \Cpp, then compile the \Cpp code
 to an executable.)
 
 A Stan program must be in a file with the file extension
-\code{.stan}. To create an executable from a Stan program,
-\code{make} will be called with the name of the executable as its
-argument. For Mac and Linux, it is the name of the Stan program with
-the \code{.stan} omitted. For Windows, replace \code{.stan} with
-\code{.exe}.
+\code{.stan}. To create an executable from a Stan program, \code{make}
+will be called with the name of the executable as its argument. For
+Mac and Linux, it is the name of the Stan program with the
+\code{.stan} omitted. For Windows, replace \code{.stan} with \code{.exe},
+and make sure that the path is given with slashes and not backslashes.
 
 To build the Bernoulli example, use the following command for Mac and
 Linux:
@@ -202,7 +202,7 @@ Linux:
 \end{quote}
 %
 For Windows, the command is the same with the addition of \code{.exe}
-at the end of the target:
+at the end of the target (note: use forward slashes):
 \begin{quote}
 \begin{Verbatim}[fontshape=sl]
 > make examples/bernoulli/bernoulli.exe
@@ -910,7 +910,7 @@ and on Windows with
 %% \emph{Warning}: \ The unit tests can take 30+ minutes and consume 3+
 %% GB of memory with the default compiler, \code{g++}.  The distribution
 %% test and model tests can take even longer.  It is faster to run the
-%% Clang compiler (option \code{CC=clang++}), and to run in multiple
+%% Clang compiler (option \code{CXX=clang++}), and to run in multiple
 %% processes in parallel (e.g., option \code{-j4} for four threads).
 
 %% \subsection{Compile-time Errors}
@@ -960,4 +960,3 @@ and on Windows with
 %% matrices) or may be misformulated.  In a future version of Stan, we
 %% plan to rank such messages by severity and turn this one off by
 %% default so as not to needlessly worry users.
-
