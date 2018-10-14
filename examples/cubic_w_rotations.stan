@@ -3,7 +3,7 @@
 functions {
   vector mech_init(int P, real X, real Y, real Z, real density);
   matrix mech_rotate(matrix C, vector q);
-  vector mech_rus(int P, int N, vector lookup, matrix C);
+  vector mech_rus(int N, vector lookup, matrix C);
   vector cu2qu(vector cu);
 }
 
@@ -25,7 +25,7 @@ data {
 }
 
 transformed data {
-  vector[L * L * 3 * 3 + L * L + L * L * 3 * 3 * 21 + L * L * 3 * 3] lookup;
+  vector[L * L + L * L * 3 * 3 * 21] lookup;
 
   lookup = mech_init(P, X, Y, Z, density);
 }
@@ -44,12 +44,13 @@ transformed parameters {
   real c12;
   matrix[6, 6] C;
   vector[4] q;
+  real zero = 0.0;
   
   c12 = -(c44 * 2.0 / a - c11);
 
   for (i in 1:6)
     for (j in 1:6)
-      C[i, j] = 0.0;
+      C[i, j] = zero;
         
   C[1, 1] = c11;
   C[2, 2] = c11;
@@ -80,14 +81,14 @@ model {
   c44 ~ normal(1.0, 2.0);
 
   // Resonance modes are normally distributed around what you'd expect from an RUS calculation
-  y ~ normal(mech_rus(P, N, lookup, C), sigma);
+  y ~ normal(mech_rus(N, lookup, C), sigma);
 }
 
 generated quantities {
   vector[N] yhat;
 
   {
-    vector[N] freqs = mech_rus(P, N, lookup, C);
+    vector[N] freqs = mech_rus(N, lookup, C);
     for(n in 1:N) {
       yhat[n] = normal_rng(freqs[n], sigma);
     }

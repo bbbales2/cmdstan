@@ -18,6 +18,7 @@ data {
 }
 
 transformed data {
+  //vector[L * L * 3 * 3 + L * L + L * L * 3 * 3 * 21 + L * L * 3 * 3] lookup;
   vector[L * L * 3 * 3 * 21] lookup;
 
   lookup = mech_init(P, X, Y, Z, density);
@@ -33,12 +34,13 @@ parameters {
 transformed parameters {
   real c12;
   matrix[6, 6] C;
+  real zero = 0.0;
   
   c12 = -(c44 * 2.0 / a - c11);
 
   for (i in 1:6)
     for (j in 1:6)
-      C[i, j] = 0.0;
+      C[i, j] = zero;
         
   C[1, 1] = c11;
   C[2, 2] = c11;
