@@ -10,7 +10,6 @@ functions {
 // Input data
 data {
   int<lower = 1> P; // Order of polynomials for Rayleigh-Ritz approx
-  int<lower = 1> L; // This is a function of P :(
   int<lower = 1> N; // Number of resonance modes
 
   // Sample known quantities
@@ -25,7 +24,8 @@ data {
 }
 
 transformed data {
-  vector[L * L + L * L * 3 * 3 * 21] lookup;
+  int L = (P + 1) * (P + 2) * (P + 3) / 6;
+  vector[L * L * 3 * 3 * 21] lookup;
 
   lookup = mech_init(P, X, Y, Z, density);
 }
