@@ -1,4 +1,3 @@
-#include "rus.stan"
 functions {
   vector mech_init(int P, real X, real Y, real Z, real density);
   vector mech_rus(int N, vector lookup, matrix C);
@@ -63,7 +62,7 @@ transformed parameters {
 model {
   vector[N] freqs = mech_rus(N, lookup, C);
 
-  sigma ~ normal(0, 2.0);
+  sigma ~ normal(0, 0.2);
 
   c11 ~ normal(1.0, 2.0);
   a ~ normal(1.0, 2.0);
@@ -74,10 +73,12 @@ model {
 
 generated quantities {
   vector[N] yhat;
+  vector[N] errors;
 
   {
     vector[N] freqs = mech_rus(N, lookup, C);
     for(n in 1:N) {
+      errors[n] = y[n] - freqs[n];
       yhat[n] = normal_rng(freqs[n], sigma);
     }
   }

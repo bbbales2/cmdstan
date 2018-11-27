@@ -73,7 +73,7 @@ transformed parameters {
 // This is the probabilistic model
 model {
   // Specify a prior on noise level. Units are khz, we expect ~100-300hz in a good fit
-  sigma ~ normal(0, 1.0);
+  sigma ~ normal(0, 0.2);
 
   // Specify soft priors on the elastic constants
   c11 ~ normal(1.0, 2.0);
@@ -86,10 +86,12 @@ model {
 
 generated quantities {
   vector[N] yhat;
+  vector[N] errors;
 
   {
     vector[N] freqs = mech_rus(N, lookup, C);
     for(n in 1:N) {
+      errors[n] = y[n] - freqs[n];
       yhat[n] = normal_rng(freqs[n], sigma);
     }
   }
