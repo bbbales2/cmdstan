@@ -38,7 +38,7 @@ include make/program
 include make/tests
 include make/command
 
-ifneq ($(filter-out clean clean-% print-% help help-% manual,$(MAKECMDGOALS)),)
+ifneq ($(filter-out clean clean-% print-% help help-% manual stan-update/% stan-update stan-pr/%,$(MAKECMDGOALS)),)
 -include $(patsubst %.cpp,%.d,$(STANC_TEMPLATE_INSTANTIATION_CPP))
 -include src/cmdstan/stanc.d
 endif
@@ -176,9 +176,10 @@ clean-deps:
 	$(shell find src $(STAN)src/stan $(MATH)stan -type f -name '*.dSYM' -exec rm {} +)
 
 clean-manual:
+	$(RM) -r doc
 	cd src/docs/cmdstan-guide; $(RM) *.brf *.aux *.bbl *.blg *.log *.toc *.pdf *.out *.idx *.ilg *.ind *.cb *.cb2 *.upa
 
-clean-all: clean clean-deps clean-libraries
+clean-all: clean clean-deps clean-libraries clean-manual
 	$(RM) -r bin
 	$(RM) $(wildcard $(STAN)src/stan/model/model_header.hpp.gch)
 
@@ -206,6 +207,7 @@ stan-revert:
 ##
 .PHONY: src/docs/cmdstan-guide/cmdstan-guide.tex
 manual: src/docs/cmdstan-guide/cmdstan-guide.pdf
+	mv -f src/docs/cmdstan-guide/cmdstan-guide.pdf doc/cmdstan-guide-$(VERSION_STRING).pdf
 
 ##
 # Debug target that allows you to print a variable
