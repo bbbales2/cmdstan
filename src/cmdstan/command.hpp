@@ -25,8 +25,10 @@
 #include <stan/services/sample/hmc_nuts_dense_e.hpp>
 #include <stan/services/sample/hmc_nuts_dense_e_adapt.hpp>
 #include <stan/services/sample/hmc_nuts_dense_e_adapt_experimental.hpp>
+#include <stan/services/sample/hmc_nuts_softabs_adapt.hpp>
 #include <stan/services/sample/hmc_nuts_diag_e.hpp>
 #include <stan/services/sample/hmc_nuts_diag_e_adapt.hpp>
+#include <stan/services/sample/hmc_xhmc_diag_e_adapt.hpp>
 #include <stan/services/sample/hmc_nuts_unit_e.hpp>
 #include <stan/services/sample/hmc_nuts_unit_e_adapt.hpp>
 #include <stan/services/sample/hmc_static_dense_e.hpp>
@@ -319,6 +321,40 @@ namespace cmdstan {
 										    term_buffer,
 										    window,
 										    adapt_experimental,
+										    interrupt,
+										    logger,
+										    init_writer,
+										    sample_writer,
+										    diagnostic_writer);
+        } else if (engine->value() == "nuts" && metric->value() == "softabs") {
+          int max_depth = dynamic_cast<int_argument*>(dynamic_cast<categorical_argument*>(algo->arg("hmc")->arg("engine")->arg("nuts"))->arg("max_depth"))->value();
+          double delta = dynamic_cast<real_argument*>(adapt->arg("delta"))->value();
+          double gamma = dynamic_cast<real_argument*>(adapt->arg("gamma"))->value();
+          double kappa = dynamic_cast<real_argument*>(adapt->arg("kappa"))->value();
+          double t0 = dynamic_cast<real_argument*>(adapt->arg("t0"))->value();
+          unsigned int init_buffer = dynamic_cast<u_int_argument*>(adapt->arg("init_buffer"))->value();
+          unsigned int term_buffer = dynamic_cast<u_int_argument*>(adapt->arg("term_buffer"))->value();
+          unsigned int window = dynamic_cast<u_int_argument*>(adapt->arg("window"))->value();
+          return_code = stan::services::sample::hmc_nuts_softabs_adapt(model,
+										    *init_context,
+										    random_seed,
+										    id,
+										    init_radius,
+										    num_warmup,
+										    num_samples,
+										    num_thin,
+										    save_warmup,
+										    refresh,
+										    stepsize,
+										    stepsize_jitter,
+										    max_depth,
+										    delta,
+										    gamma,
+										    kappa,
+										    t0,
+										    init_buffer,
+										    term_buffer,
+										    window,
 										    interrupt,
 										    logger,
 										    init_writer,
