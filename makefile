@@ -23,11 +23,12 @@ help:
 
 STAN ?= stan/
 MATH ?= $(STAN)lib/stan_math/
+RAPIDJSON ?= lib/rapidjson_1.1.0/
 ifeq ($(OS),Windows_NT)
   O_STANC ?= 3
 endif
 O_STANC ?= 0
-INC_FIRST ?= -I src -I $(STAN)src
+INC_FIRST ?= -I src -I $(STAN)src -I $(RAPIDJSON)
 USER_HEADER ?= $(dir $<)user_header.hpp
 
 -include $(MATH)make/compiler_flags
@@ -43,10 +44,7 @@ ifneq ($(filter-out clean clean-% print-% help help-% manual stan-update/% stan-
 -include src/cmdstan/stanc.d
 endif
 
-CMDSTAN_VERSION := 2.18.0
-
--include $(STAN)make/manual
-
+CMDSTAN_VERSION := 2.21.0
 
 .PHONY: help
 help:
@@ -54,18 +52,33 @@ help:
 	@echo 'CmdStan v$(CMDSTAN_VERSION) help'
 	@echo ''
 	@echo '  Build CmdStan utilities:'
+ifeq ($(OS),Windows_NT)
+	@echo '    > mingw32-make build'
+else
 	@echo '    > make build'
+endif
 	@echo ''
 	@echo '    This target will:'
 	@echo '    1. Build the Stan compiler bin/stanc$(EXE).'
 	@echo '    2. Build the print utility bin/print$(EXE) (deprecated; will be removed in v3.0)'
 	@echo '    3. Build the stansummary utility bin/stansummary$(EXE)'
 	@echo '    4. Build the diagnose utility bin/diagnose$(EXE)'
+	@echo '    5. Build all dependencies of Stan'
 	@echo ''
 	@echo '    Note: to build using multiple cores, use the -j option to make. '
 	@echo '    For 4 cores:'
+ifeq ($(OS),Windows_NT)
+	@echo '    > mingw32-make build -j4'
+else
 	@echo '    > make build -j4'
+endif
 	@echo ''
+ifeq ($(OS),Windows_NT)
+	@echo '    On Windows it is recommended to include with the PATH environment'
+	@echo '    variable the directory of the Intel TBB library.'
+	@echo '    This can be setup permanently for the user with'
+	@echo '    > mingw32-make install-tbb'
+endif
 	@echo ''
 	@echo '  Build a Stan program:'
 	@echo ''
@@ -142,6 +155,7 @@ help-dev:
 	@echo '                   bin/stanc$(EXE))'
 	@echo '- *$(EXE)        : If a Stan model exists at *.stan, this target will build'
 	@echo '                   the Stan model as an executable.'
+	@echo '- compile_info   : prints compiler flags for compiling a CmdStan executable.'
 	@echo ''
 	@echo 'Documentation:'
 	@echo ' - manual:          Build the Stan manual and the CmdStan user guide.'
@@ -153,10 +167,27 @@ build-mpi: $(MPI_TARGETS)
 	@echo '--- boost mpi bindings built ---'
 
 .PHONY: build
-build: bin/stanc$(EXE) bin/stansummary$(EXE) bin/print$(EXE) bin/diagnose$(EXE) $(LIBSUNDIALS) $(MPI_TARGETS)
+build: bin/stanc$(EXE) bin/stansummary$(EXE) bin/print$(EXE) bin/diagnose$(EXE) $(LIBSUNDIALS) $(MPI_TARGETS) $(TBB_TARGETS) $(CMDSTAN_MAIN_O)
 	@echo ''
+ifeq ($(OS),Windows_NT)
+		@echo 'NOTE: Please add $(TBB_BIN_ABSOLUTE_PATH) to your PATH variable.'
+		@echo 'You may call'
+		@echo ''
+		@echo 'mingw32-make install-tbb'
+		@echo ''
+		@echo 'to automatically update your user configuration.'
+endif
 	@echo '--- CmdStan v$(CMDSTAN_VERSION) built ---'
 
+ifeq ($(CXX_TYPE),clang)
+build: $(STAN)src/stan/model/model_header.hpp.gch
+endif
+
+.PHONY: install-tbb
+install-tbb: $(TBB_TARGETS)
+ifeq ($(OS),Windows_NT)
+	$(shell echo "cmd.exe /C install-tbb.bat")
+endif
 
 ##
 # Clean up.
@@ -181,6 +212,7 @@ clean-manual:
 
 clean-all: clean clean-deps clean-libraries clean-manual
 	$(RM) -r bin
+	$(RM) -r $(CMDSTAN_MAIN_O)
 	$(RM) $(wildcard $(STAN)src/stan/model/model_header.hpp.gch)
 
 ##
@@ -205,11 +237,22 @@ stan-revert:
 ##
 # Manual related
 ##
+
 .PHONY: src/docs/cmdstan-guide/cmdstan-guide.tex
 manual: src/docs/cmdstan-guide/cmdstan-guide.pdf
-	mv -f src/docs/cmdstan-guide/cmdstan-guide.pdf doc/cmdstan-guide-$(VERSION_STRING).pdf
+	mkdir -p doc
+	mv -f src/docs/cmdstan-guide/cmdstan-guide.pdf doc/cmdstan-guide-$(CMDSTAN_VERSION).pdf
+
+%.pdf: %.tex
+	cd $(dir $@); latexmk -pdf -pdflatex="pdflatex -file-line-error" -use-make $(notdir $^)
+
+
+.PHONY: compile_info
+compile_info:
+	@echo '$(LINK.cpp) $(CXXFLAGS_PROGRAM) $(CMDSTAN_MAIN_O) $(LDLIBS) $(LIBSUNDIALS) $(MPI_TARGETS) $(TBB_TARGETS)'
 
 ##
 # Debug target that allows you to print a variable
 ##
+.PHONY: print-%
 print-%  : ; @echo $* = $($*)
