@@ -10,19 +10,17 @@ processor cores.
 
 \section{Operating System}
 
-\CmdStan is written in portable \Cpp without {\Cpp}11 features, as are the
+\CmdStan is written in portable \Cpp with {\Cpp}11 and {\Cpp}14 features, as are the
 libraries on which it depends.  Therefore, \CmdStan should run on any machine
-for which a suitable \Cpp compiler is available.  In practice, \CmdStan,
-like the Boost and Eigen libraries on which it depends, is very hard
-on the compiler and linker.
+for which a suitable \Cpp compiler supporting C++1y or C++14 features is available. In practice, \CmdStan,
+like the Boost and Eigen libraries on which it depends, is very hard on the compiler and linker.
 
 \CmdStan has been tested on the following operating systems.
 %
 \begin{itemize}
-\item Linux (Debian, Ubuntu, Red Hat)
-\item Mac OS X (10.10 ``Yosemite,'' 10.9 ``Mavericks,'' 10.8
-  ``Mountain Lion,'' 10.7 ``Lion,'' and 10.6 ``Snow Leopard'')
-\item Windows (XP, 7, 8).
+\item Linux (Debian, Ubuntu)
+\item Mac OS X (from 10.6 ``Snow Leopard''  through 10.15 ``Catalina'')
+\item Windows (7, 8, 10).
 \end{itemize}
 %
 \CmdStan should work on other versions of these operating systems if
@@ -41,8 +39,8 @@ In order to compile Stan program, the \CmdStan source code is
 required.  The \CmdStan source code distribution includes \CmdStan's
 source code, Stan's source code, documentation, build scripts, unit
 tests, documentation and source for the required libraries, Stan Math
-Library, Boost, and Eigen, and the source for an optional testing
-library, Google Test.
+Library, Boost, Eigen, Sundials, Intel TBB, and the source for an
+optional testing library, Google Test.
 
 \subsubsection{CmdStan: Stable Releases}
 
@@ -71,7 +69,6 @@ algorithms are in the Stan library.
 \begin{itemize}
 \item Home: \url{http://mc-stan.org/stan.html}
 \item License: BSD
-\item Tested Version: 2.18.0
 \end{itemize}
 %
 The Stan source code is distributed with \CmdStan.
@@ -85,7 +82,6 @@ Library.
 \begin{itemize}
 \item Home: \url{http://mc-stan.org}
 \item License: BSD
-\item Tested Version: 2.18.0
 \end{itemize}
 %
 The Stan Math Library source code is distributed with \CmdStan
@@ -99,7 +95,6 @@ Library.
 \begin{itemize}
 \item Home: \url{http://www.boost.org/users/license.html}
 \item License: Boost Software License
-\item Tested Version: 1.58.0
 \end{itemize}
 %
 The Boost source code is distributed with \CmdStan.
@@ -113,10 +108,32 @@ algebra library.
 \begin{itemize}
 \item Home: \url{http://eigen.tuxfamily.org}
 \item License: Mozilla Public License, version 2.0
-\item Tested Version: 3.2.4
 \end{itemize}
 %
 The Eigen source code is distributed with \CmdStan.
+
+\subsubsection{SUite of Nonlinear and DIfferential/ALgebraic Equation Solvers}
+
+Some of Stan's ordinary differenetial equation (ODE) solvers and
+implicit function solvers use the Sundials library.
+%
+\begin{itemize}
+\item Home: \url{https://computing.llnl.gov/projects/sundials}
+\item License: BSD
+\end{itemize}
+%
+The Sundials source code is distributed with \CmdStan.
+
+\subsubsection{Intel Threading Building Blocks}
+
+Stan uses the Intel TBB library for advanced threading support.
+%
+\begin{itemize}
+\item Home: \url{https://software.intel.com/en-us/tbb}
+\item License: Apache 2.0
+\end{itemize}
+%
+The Intel TBB source code is distributed with \CmdStan.
 
 
 \subsection{\Cpp Compiler}
@@ -124,29 +141,8 @@ The Eigen source code is distributed with \CmdStan.
 Compiling \CmdStan programs requires a \Cpp compiler.  \CmdStan has been
 primarily developed with \clang and \gpp and no promises are made for
 other compilers.  The full set of compilers for which \CmdStan has been
-tested is
-%
-\begin{itemize}
-%
-\item \gpp
-\\
-Tested Versions: Mac 4.2.1, 4.6, Linux 4.4--4.7 (plus trunk 4.8, 4.9), Windows 4.6.3
-\\
-Home: \url{http://gcc.gnu.org/}
-\\
-License: GPL3+
-%
-\item \clang, Mac 2.9--3.1, 6.1, Linux 2.9--3.1
-\\
-Home: \url{http://clang.llvm.org/}
-\\
-License: BSD
-%
-\item mingw-64, version 2.0 (Windows 7, cross-compiled from Debian Linux)
-%
-\end{itemize}
-%
-
+tested is listed on the
+\href {https://github.com/stan-dev/stan/wiki/Supported-C---Compilers-and-Language-Features}{CmdStan wiki}.
 
 \section{Step-by-Step Windows Install Instructions}\label{install-windows.appendix}
 
@@ -227,10 +223,10 @@ To verify that \gpp is installed, use the following command.
 \end{quote}
 %
 This should report version information for \gpp.  Next, verify that
-\code{make} is installed with the following command.
+make variant \code{mingw32-make} is installed with the following command.
 %
 \begin{quote}
-  \Verb|> make -v|
+  \Verb|> mingw32-make -v|
 \end{quote}
 %
 This should print version information for make.
@@ -238,9 +234,11 @@ This should print version information for make.
 \subsection{Downloading and Unpacking \CmdStan}
 
 The \CmdStan source code distribution is named
-\code{cmdstan-\cmdstanversion.tar.gz}; the versions here are major
-version 2, minor version 7, and patch level 0.  Download the latest
+\code{cmdstan-M.m.x.tar.gz} where \code{M} is the major version number,
+\code{m} is the minor version number, and \code{x} is the patch level.
+Download the latest
 \CmdStan source tarball from the \CmdStan downloads page,
+i.e. the file which has the highest major, minor, patch numbers,
 %
 \begin{quote}
 \url{https://github.com/stan-dev/cmdstan/releases}
@@ -291,12 +289,11 @@ list the directory contents using:
 \end{Verbatim}
 \end{quote}
 
-Finally, unpack the distribution using the \code{tar} command (which
-is installed as part of Rtools).
+Finally, unpack the distribution using the \code{tar} command.
 %
 \begin{quote}
 \begin{Verbatim}[fontshape=sl,fontsize=\small]
-> tar --no-same-owner -xzf cmdstan-2.18.0.tar.gz
+> tar --no-same-owner -xzf cmdstan-2.22.1.tar.gz
 \end{Verbatim}
 \end{quote}
 %
@@ -355,13 +352,14 @@ To test, open the Terminal application and enter
 \end{quote}
 %
 Verify that \code{make} is at version 3.81 or later and \code{g++}
-is at 4.2.1 or later.
+is at 4.9.3 or later.
 
 
 \subsection{Download and Unpack \CmdStan Source}
 
-Download the most recent version of \code{cmdstan-\cmdstanversion.tar.gz} from
-the \CmdStan downloads list,
+Download the most recent \CmdStan release,
+i.e., the file\code{cmdstan-M.m.x.tar.gz},
+from the \CmdStan downloads list:
 %
 \begin{quote}
 \url{https://github.com/stan-dev/cmdstan/releases}
@@ -370,12 +368,12 @@ the \CmdStan downloads list,
 Open the folder containing the download in the Finder
 (typically, the user's top-level \code{Downloads} folder).
 
-If the Mac OS has not automatically unpacked the \code{.tar.gz}
-file into file \code{cmdstan-\cmdstanversion.tar},
+If the Mac OS has not automatically unpacked compressed \code{.tar.gz}
+file into a tarfile \code{.tar},
 double-click the \code{.tar.gz} file to unpack.
 
 Double click on the \code{.tar} file to unarchive
-directory \code{cmdstan-\cmdstanversion}.
+directory \code{cmdstan-M.m.x}.
 
 Move the resulting directory to a location where it will not be
 deleted, henceforth called \code{<cmdstan-home>}.
@@ -401,18 +399,18 @@ are already installed, use the commands
 \end{Verbatim}
 \end{quote}
 %
-If these are at least at \code{g++} version 4.2.1 or later and
+If these are at least at \code{g++} version 4.9.3 or later and
 \code{make} version 3.81 or later, no additional installations are
 necessary.  It may still be desirable to update the \Cpp compiler
 \code{g++}, because later versions are faster.
 
-To install the latest version of these
-tools (or upgrade an older version), use the commands
+To install the latest version of these 
+tools (or upgrade an older version), use the following commands or their equivalent for your distribution: 
 %
 \begin{quote}
 \begin{Verbatim}[fontshape=sl,fontsize=\small]
-> sudo apt-get install g++
-> sudo apt-get install make
+> sudo apt install g++
+> sudo apt install make
 \end{Verbatim}
 \end{quote}
 %
@@ -422,7 +420,11 @@ A password will likely be required by the superuser command \code{sudo}.
 \subsection{Downloading and Unpacking \CmdStan Source}
 
 Download the most recent stable version of \CmdStan,
-\code{cmdstan-\cmdstanversion.tar.gz}, from the \CmdStan downloads page,
+from the \CmdStan downloads page.
+This is a file named \code{cmdstan-M.m.x.tar.gz} 
+where \code{M} is the major version number,
+\code{m} is the minor version number, and \code{x} is the patch level,
+which has the highest major, minor, patch numbers,
 %
 \begin{quote}
 \url{https://github.com/stan-dev/cmdstan/releases}
@@ -443,14 +445,14 @@ where \code{<download-dir>} is replaced with the actual path to the directory.
 
 Then, unpack the distribution into the subdirectory
 \begin{quote}
-\nolinkurl{<download-dir>/cmdstan-\cmdstanversion}
+\nolinkurl{<download-dir>/cmdstan-M.m.x}
 \end{quote}
 %
 with
 %
 \begin{quote}
 \begin{Verbatim}[fontshape=sl,fontsize=\small]
-> tar -xzf cmdstan-2.18.0.tar.gz
+> tar -xzf cmdstan-2.22.1.tar.gz
 \end{Verbatim}
 \end{quote}
 
@@ -460,7 +462,7 @@ with
 \subsection{Setting a Variable}
 \CmdStan uses \code{make} for building the \CmdStan tools and
 compiling Stan programs as executables. Users can customize how the
-tools are built by editing \code{make/local} inside the
+tools are built by creating and editing \code{make/local} inside their
 \code{<cmdstan-home>} directory.
 
 Customization is done by setting variables or appending to them. For
@@ -507,31 +509,28 @@ There are two options for controlling \stanc:
 \subsubsection{Changing Library Locations}
 
 The next set of variables allow for easy replacement of dependent
-libraries. \CmdStan depends on Stan, Boost, Eigen, and
-CVODES. Although \CmdStan is bundled with a particular verison of
+libraries. \CmdStan depends on Stan, Boost, Eigen, Sundials, and Intel
+TBB. Although \CmdStan is bundled with a particular verison of
 Stan, other versions can be used. The same is true with Boost, Eigen,
-and CVODES.
+Sundials, and Intel TBB.
 
 The Stan developers typically replace the tagged version of Stan in
 \code{<cmdstan-home>/stan} with an updated version and do not set
 these variables. That said, it is easy to point \CmdStan to other
 versions of these libraries in other directories.
+Note that a forward slash at the end of the directory name is necessary.
 %
 \begin{itemize}
-  \item \Verb|STAN|. The location of the Stan source
-    directory. The default is \Verb|STAN=stan/|. Note: the
-    trailing forward slash is necessary.
-  \item \Verb|MATH|. The location of the Stan Math Library. The
-    default is \Verb|MATH=stan/lib/stan_math/|.
-  \item \Verb|BOOST|. The location of the Boost library. If
-    \Verb|BOOST| is not explicitly set, this will default to the
-    \Verb|lib/boost_1.66.0/| folder within \Verb|MATH|.
-  \item \Verb|EIGEN|. The location of the Eigen library. If
-    \Verb|EIGEN| is not explicitly set, this will default to the
-    \Verb|lib/eigen_3.3.3/| folder within \Verb|MATH|.
-  \item \Verb|SUNDIALS|. The location of the SUNDIALS library. If
-    \Verb|SUNDIALS| is not explicity set, this will default to the
-    \Verb|lib/sundials_3.1.0/| folder with \Verb|MATH|.
+  \item \Verb|STAN|. The location of the Stan source directory.
+  \item \Verb|MATH|. The location of the Stan Math Library.
+  \item \Verb|BOOST|. The location of the Boost library.
+    The default location is within \Verb|MATH| \Verb|lib| directory.
+  \item \Verb|EIGEN|. The location of the Eigen library.
+    The default location is within \Verb|MATH| \Verb|lib| directory.
+  \item \Verb|SUNDIALS|. The location of the SUNDIALS library.
+    The default location is within \Verb|MATH| \Verb|lib| directory.
+  \item \Verb|TBB|. The location of the Intel TBB library.
+    The default location is within \Verb|MATH| \Verb|lib| directory.
 \end{itemize}
 %
 
@@ -604,8 +603,9 @@ computations which ensure that divergent transitions are reported:
 \section{Optional Parallelization Support}
 
 \CmdStan has optional support for within-chain parallelization using
-threads or multiple processes which are linked via the message passing
-interface (MPI).
+threading, OpenCL, or MPI (Message Passing Interface).
+
+\subsection{Threading and MPI}
 %
 \begin{description}
   \item[Threads] can utilize multiple cores on a single
@@ -614,16 +614,39 @@ interface (MPI).
     instructions on how to setup threading.
   \item[MPI] is typically used on large computing clusters. The MPI
     standard allows to link together a large number of processes which
-    can run locally on the same and/or accross potentially many
+    can run locally on one machine or across many
     different machines. Please refer to
     \url{https://github.com/stan-dev/math/wiki/MPI-Parallelism} for
     more details.
 \end{description}
 %
-The within-chain parallelization is used in the Stan language to
-parallelize the evaluation of the \Verb|map_rect| command. Note that
+The within-chain parallelization for threading and MPI is used in the Stan
+language to parallelize the evaluation of the \Verb|map_rect| command. Note that
 MPI parallelism will take precendence in case both features are
 enabled.
+
+\subsection{OpenCL}
+
+OpenCL in \CmdStan enables Cholesky decompositions to utilize a GPU for large parallel computations. In order to use OpenCL, a few lines need to be added to \code{make/local}.
+\begin{itemize}
+  \item \Verb|STAN_OPENCL=true| Enable the use of OpenCL.
+  \item \Verb|OPENCL_PLATFORM_ID=<int>| Set which OpenCL platform to use.
+  \item \Verb|OPENCL_DEVICE_ID=<int>| Set which OpenCL device on the selected platform to use.
+\end{itemize}
+
+Windows users need to additionally specify the following two flags depending on the GPU you are running OpenCL on.
+
+\subsubsection{NVIDIA GPU}
+\begin{itemize}
+  \item \Verb|LDFLAGS_OPENCL= -L"\$(CUDA_PATH)\lib\x64" -lOpenCL|
+\end{itemize}
+
+\subsubsection{AMD GPU}
+\begin{itemize}
+  \item \Verb|LDFLAGS_OPENCL= -L"\$(AMDAPPSDKROOT)lib\x86_64" -lOpenCL|
+\end{itemize}
+
+If you are unsure if your devices support OpenCL, we suggest running the \code{clinfo} application that lists all available OpenCL supported devices. Please refer to \url{https://github.com/stan-dev/math/wiki/OpenCL-GPU-Routines} for additional setup instructions. Currently, OpenCL will only pass matrices over to the GPU if their dimensions are larger than $1250\times 1250$.
 
 \section{Optional Components for Developers}
 
@@ -643,6 +666,9 @@ using scripts in the form of makefiles to run with GNU Make.
 \item Tested Versions: 3.81 (Mac OS X), 3.79 (Windows 7)
 \end{itemize}
 %
+On Windows \code{mingw32-make} variant must be used as a requirement
+to build the Intel TBB. This variant of \code{make} is available as
+part of RTools \url{https://cran.rstudio.com/bin/windows/Rtools/}.
 
 
 \subsection{Doxygen Documentation Generator}
@@ -680,7 +706,7 @@ Home: \url{http://code.google.com/p/googletest/}
 \item
 License: BSD
 \item
-Tested Version(s): 1.7.0
+Tested Version(s): 1.8.1
 \end{itemize}
 %
 The Google Test framework is distributed with Stan.
