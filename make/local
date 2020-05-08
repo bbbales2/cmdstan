@@ -3,3 +3,4 @@ USER_HEADER=src/modal_cpp/stan_mech.hpp
 CXXFLAGS=-I src/modal_cpp/spectra/include/Spectra
 LDFLAGS=
 LDLIBS=-llapack
+STANC2=true
